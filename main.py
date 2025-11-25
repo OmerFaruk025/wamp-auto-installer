@@ -1,7 +1,7 @@
 # main.py - rebuild-menu approach so menu titles change reliably on language change
 import ctypes, sys
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox # messagebox eklendi
 import threading, time
 from vc_checker import get_missing_vc
 from vc_installer import install_vc
@@ -10,11 +10,16 @@ from apache_fixer import check_service, start_service
 from utils.system import is_admin, is_windows
 from languages import get_text, set_current_lang, languages
 
-if not ctypes.windll.shell32.IsUserAnAdmin():
-    ctypes.windll.shell32.ShellExecuteW(
-        None, "runas", sys.executable, " ".join(sys.argv), None, 1
+# --- Admin Yetkisi Kontrolü ---
+# Programın kendi kendini otomatik yükseltmesini kaldırdık.
+# Kullanıcıdan manuel olarak Yönetici çalıştırması bekleniyor.
+if is_windows() and not ctypes.windll.shell32.IsUserAnAdmin():
+    # Admin değilse uyarı göster ve çık
+    messagebox.showerror(
+        "Yönetici Yetkisi Gerekli", # Bu başlığı dil dosyandan çekmelisin
+        "Bu programın çalışabilmesi için Yönetici olarak başlatılması gerekmektedir." # Bu metni dil dosyandan çekmelisin
     )
-    sys.exit()
+    sys.exit() 
 
 # ----------------------- Tema -----------------------
 LIGHT_BG = "#f0f0f0"
@@ -112,6 +117,7 @@ def on_language_selected(lang):
     """Called when user picks a language from the menu."""
     set_current_lang(lang)
     # Update UI texts
+    root.title(get_text("title")) # Pencere başlığını da güncelle
     title.config(text=get_text("title"))
     scan_btn.config(text=get_text("scan"))
     auto_fix_btn.config(text=get_text("auto_fix"))
@@ -141,6 +147,7 @@ def run_scan():
         log(get_text("only_windows"))
         return
     if not is_admin():
+        # Admin uyarısı artık burada, sadece log'da
         log(get_text("admin_warning"))
         return
 
@@ -190,6 +197,7 @@ def auto_fix():
     progress["value"] = 0
 
     if not is_admin():
+        # Admin uyarısı artık burada, sadece log'da
         log(get_text("admin_warning"))
         return
 
@@ -199,10 +207,23 @@ def auto_fix():
     # VC++ Eksikleri
     missing = get_missing_vc()
     if missing:
-        for m in missing:
-            log(get_text("vc_installing").format(package=m))
-            ok, msg = install_vc(m)
-            log(msg)
+        # --- KULLANICI ONAY MEKANİZMASI ---
+        # Dil dosyasında bu stringlerin tanımlı olduğunu varsayıyoruz
+        confirm_title = get_text("vc_install_confirm_title") 
+        confirm_text = get_text("vc_install_confirm_text").format(count=len(missing))
+        
+        # Kullanıcıya kurulumu yapıp yapmak istemediğini sor
+        if messagebox.askyesno(confirm_title, confirm_text):
+            for m in missing:
+                log(get_text("vc_installing").format(package=m))
+                
+                # vc_installer.py çağrısı sadece onaydan sonra gerçekleşiyor
+                ok, msg = install_vc(m)
+                log(msg)
+        else:
+            # Kullanıcı hayır dediyse
+            log(get_text("vc_install_skipped"))
+            
     else:
         log(get_text("vc_all_installed"))
     progress["value"] = 1
