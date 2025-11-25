@@ -1,7 +1,7 @@
 # main.py - rebuild-menu approach so menu titles change reliably on language change
 import ctypes, sys
 import tkinter as tk
-from tkinter import ttk, messagebox # messagebox eklendi
+from tkinter import ttk, messagebox # messagebox zaten ekliydi, harika!
 import threading, time
 from vc_checker import get_missing_vc
 from vc_installer import install_vc
@@ -16,8 +16,8 @@ from languages import get_text, set_current_lang, languages
 if is_windows() and not ctypes.windll.shell32.IsUserAnAdmin():
     # Admin değilse uyarı göster ve çık
     messagebox.showerror(
-        "Yönetici Yetkisi Gerekli", # Bu başlığı dil dosyandan çekmelisin
-        "Bu programın çalışabilmesi için Yönetici olarak başlatılması gerekmektedir." # Bu metni dil dosyandan çekmelisin
+        get_text("admin_title_error"), # languages.py'den çek
+        get_text("admin_message_error") # languages.py'den çek
     )
     sys.exit() 
 
@@ -123,17 +123,22 @@ def on_language_selected(lang):
     auto_fix_btn.config(text=get_text("auto_fix"))
     # Rebuild menus so labels/cascades reflect new language
     build_menus()
-    # Optionally refresh logs or other text if needed
-    # e.g. redraw output header if you want to show current language there:
-    # output.insert(tk.END, f"Language set to: {lang}\n")
 
 # initial build
 build_menus()
 
-# ----------------------- Logging -----------------------
+# ----------------------- LOGGING ve GENEL ONAY İŞLEVLERİ -----------------------
+
 def log(msg):
     output.insert(tk.END, msg + "\n")
     output.see(tk.END)
+
+def confirm_general_action(title_key, text_key):
+    """languages.py'den gelen metinlerle GUI onay kutusu gösterir (Evet/Hayır)."""
+    title = get_text(title_key)
+    text = get_text(text_key)
+    # messagebox.askyesno kullanılarak tkinter üzerinden onay alınır
+    return messagebox.askyesno(title, text)
 
 # ----------------------- Scan -----------------------
 def run_scan_thread():
@@ -147,10 +152,17 @@ def run_scan():
         log(get_text("only_windows"))
         return
     if not is_admin():
-        # Admin uyarısı artık burada, sadece log'da
         log(get_text("admin_warning"))
         return
 
+    # --- YENİ EKLENEN: TARAMA ÖNCESİ GENEL ONAY ---
+    # languages.py'de 'general_scan_confirm_title' ve 'general_scan_confirm_text' olmalı.
+    if not confirm_general_action("general_scan_confirm_title", "general_scan_confirm_text"):
+        log(get_text("scan_cancelled"))
+        progress["value"] = 0
+        return
+    # ---------------------------------------------
+    
     log(get_text("scan_started"))
     progress["maximum"] = 5
 
@@ -197,9 +209,16 @@ def auto_fix():
     progress["value"] = 0
 
     if not is_admin():
-        # Admin uyarısı artık burada, sadece log'da
         log(get_text("admin_warning"))
         return
+
+    # --- YENİ EKLENEN: DÜZELTME ÖNCESİ GENEL ONAY ---
+    # languages.py'de 'general_fix_confirm_title' ve 'general_fix_confirm_text' olmalı.
+    if not confirm_general_action("general_fix_confirm_title", "general_fix_confirm_text"):
+        log(get_text("fix_cancelled"))
+        progress["value"] = 0
+        return
+    # ---------------------------------------------
 
     log(get_text("auto_fix_started"))
     progress["maximum"] = 5
@@ -207,8 +226,7 @@ def auto_fix():
     # VC++ Eksikleri
     missing = get_missing_vc()
     if missing:
-        # --- KULLANICI ONAY MEKANİZMASI ---
-        # Dil dosyasında bu stringlerin tanımlı olduğunu varsayıyoruz
+        # --- VC++ KURULUMU ÖNCESİ ÖZEL ONAY MEKANİZMASI (Bu ayrı bir onay) ---
         confirm_title = get_text("vc_install_confirm_title") 
         confirm_text = get_text("vc_install_confirm_text").format(count=len(missing))
         
@@ -257,3 +275,5 @@ scan_btn.config(command=run_scan_thread)
 auto_fix_btn.config(command=auto_fix_thread)
 
 root.mainloop()
+
+

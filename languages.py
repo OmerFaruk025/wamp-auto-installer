@@ -1,5 +1,11 @@
-# languages.py
+# languages.py - Dil tanımlamaları ve yönetim fonksiyonları
+import os # Yükleme mesajlarında kullanmak için eklendi
 
+# Varsayılan dil
+current_lang = "English"
+
+# Tüm metinleri içeren sözlük
+# Not: Lütfen buradaki anahtarların main.py'deki get_text() çağrıları ile eşleştiğinden emin olun.
 languages = {
     "English": {
         "title": "WAMP Auto Fixer",
@@ -32,7 +38,12 @@ languages = {
         "apache_already": "[APACHE] Already running.",
         "downloading_file": "[DOWNLOADING] {file}",
         "download_failed": "[ERROR] Could not download {file}: {msg}",
-        "unknown_process": "Unknown Process"
+        "unknown_process": "Unknown Process",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ System Change Confirmation",
+        "general_fix_confirm_text": "The Auto-Fix process will make changes to your system, such as installing VC++ and starting/stopping the Apache service. Do you want to continue? (You proceed at your own risk!)",
+        "fix_cancelled": "Process cancelled due to lack of user confirmation.",
     },
 
     "Türkçe": {
@@ -66,7 +77,12 @@ languages = {
         "apache_already": "[APACHE] Zaten çalışıyor.",
         "downloading_file": "[İNDİRİLİYOR] {file}",
         "download_failed": "[HATA] Dosya indirilemedi: {file}: {msg}",
-        "unknown_process": "Bilinmeyen"
+        "unknown_process": "Bilinmeyen",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ Sistem Değişikliği Onayı",
+        "general_fix_confirm_text": "Otomatik düzeltme işlemi, VC++ kurulumu ve Apache hizmetini başlatma/durdurma gibi sisteminizde değişiklikler yapacaktır. Devam etmek istiyor musunuz? (Sorumluluk size aittir!)",
+        "fix_cancelled": "İşlem, kullanıcı onayı olmadan iptal edildi.",
     },
 
     "Español": {
@@ -100,7 +116,12 @@ languages = {
         "apache_already": "[APACHE] Ya en ejecución.",
         "downloading_file": "[DESCARGANDO] {file}",
         "download_failed": "[ERROR] No se pudo descargar {file}: {msg}",
-        "unknown_process": "Proceso Desconocido"
+        "unknown_process": "Proceso Desconocido",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ Confirmación de Cambio del Sistema",
+        "general_fix_confirm_text": "El proceso de Auto-Corregir realizará cambios en su sistema, como la instalación de VC++ y el inicio/parada del servicio Apache. ¿Desea continuar? (¡Usted procede bajo su propio riesgo!)",
+        "fix_cancelled": "Proceso cancelado debido a la falta de confirmación del usuario.",
     },
 
     "Français": {
@@ -134,7 +155,12 @@ languages = {
         "apache_already": "[APACHE] Déjà en cours.",
         "downloading_file": "[TÉLÉCHARGEMENT] {file}",
         "download_failed": "[ERREUR] Impossible de télécharger {file} : {msg}",
-        "unknown_process": "Processus Inconnu"
+        "unknown_process": "Processus Inconnu",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ Confirmation de Modification du Système",
+        "general_fix_confirm_text": "Le processus de Réparation automatique apportera des modifications à votre système, telles que l'installation de VC++ et le démarrage/l'arrêt du service Apache. Voulez-vous continuer ? (Vous procédez à vos propres risques !)",
+        "fix_cancelled": "Processus annulé en l'absence de confirmation de l'utilisateur.",
     },
 
     "Deutsch": {
@@ -168,7 +194,12 @@ languages = {
         "apache_already": "[APACHE] Läuft bereits.",
         "downloading_file": "[HERUNTERLADEN] {file}",
         "download_failed": "[FEHLER] Datei konnte nicht geladen werden: {file}: {msg}",
-        "unknown_process": "Unbekannter Prozess"
+        "unknown_process": "Unbekannter Prozess",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ Bestätigung der Systemänderung",
+        "general_fix_confirm_text": "Der Auto-Reparaturprozess nimmt Änderungen an Ihrem System vor, wie die Installation von VC++ und das Starten/Stoppen des Apache-Dienstes. Möchten Sie fortfahren? (Sie handeln auf eigenes Risiko!)",
+        "fix_cancelled": "Der Vorgang wurde mangels Benutzerbestätigung abgebrochen.",
     },
 
     "Русский": {
@@ -202,7 +233,12 @@ languages = {
         "apache_already": "[APACHE] Уже работает.",
         "downloading_file": "[ЗАГРУЗКА] {file}",
         "download_failed": "[ОШИБКА] Не удалось загрузить {file}: {msg}",
-        "unknown_process": "Неизвестный процесс"
+        "unknown_process": "Неизвестный процесс",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ Подтверждение изменения системы",
+        "general_fix_confirm_text": "Процесс Авто-исправления внесет изменения в вашу систему, такие как установка VC++ и запуск/остановка сервиса Apache. Вы хотите продолжить? (Вы действуете на свой страх и риск!)",
+        "fix_cancelled": "Процесс отменен из-за отсутствия подтверждения пользователя.",
     },
 
     "العربية": {
@@ -236,7 +272,12 @@ languages = {
         "apache_already": "[APACHE] يعمل بالفعل.",
         "downloading_file": "[جارٍ التحميل] {file}",
         "download_failed": "[خطأ] تعذر تحميل {file}: {msg}",
-        "unknown_process": "عملية غير معروفة"
+        "unknown_process": "عملية غير معروفة",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ تأكيد تغيير النظام",
+        "general_fix_confirm_text": "ستقوم عملية الإصلاح التلقائي بإجراء تغييرات على نظامك، مثل تثبيت VC++ وبدء/إيقاف خدمة Apache. هل تريد المتابعة؟ (أنت تتقدم على مسؤوليتك الخاصة!)",
+        "fix_cancelled": "تم إلغاء العملية لعدم تأكيد المستخدم.",
     },
 
     "Italiano": {
@@ -270,7 +311,12 @@ languages = {
         "apache_already": "[APACHE] Già in esecuzione.",
         "downloading_file": "[DOWNLOAD] {file}",
         "download_failed": "[ERRORE] Impossibile scaricare {file}: {msg}",
-        "unknown_process": "Processo Sconosciuto"
+        "unknown_process": "Processo Sconosciuto",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ Conferma Modifica Sistema",
+        "general_fix_confirm_text": "Il processo di Correzione Automatica apporterà modifiche al tuo sistema, come l'installazione di VC++ e l'avvio/arresto del servizio Apache. Vuoi continuare? (Si procede a proprio rischio!)",
+        "fix_cancelled": "Processo annullato per mancanza di conferma dell'utente.",
     },
 
     "日本語": {
@@ -304,7 +350,12 @@ languages = {
         "apache_already": "[APACHE] すでに実行中です。",
         "downloading_file": "[ダウンロード中] {file}",
         "download_failed": "[エラー] {file} をダウンロードできませんでした: {msg}",
-        "unknown_process": "不明なプロセス"
+        "unknown_process": "不明なプロセス",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ システム変更の確認",
+        "general_fix_confirm_text": "自動修復プロセスは、VC++のインストールやApacheサービスの開始/停止など、システムに変更を加えます。続行しますか？ (ご自身の責任で進めてください!)",
+        "fix_cancelled": "ユーザーの確認がないため、プロセスがキャンセルされました。",
     },
 
     "中文": {
@@ -338,7 +389,12 @@ languages = {
         "apache_already": "[APACHE] 已在运行。",
         "downloading_file": "[下载中] {file}",
         "download_failed": "[错误] 无法下载 {file}: {msg}",
-        "unknown_process": "未知进程"
+        "unknown_process": "未知进程",
+        
+        # YENİ GENEL ONAY METİNLERİ
+        "general_fix_confirm_title": "⚠️ 系统更改确认",
+        "general_fix_confirm_text": "自动修复过程将对您的系统进行更改，例如安装 VC++ 和启动/停止 Apache 服务。您要继续吗？ (风险自负!)",
+        "fix_cancelled": "因缺乏用户确认，流程已取消。",
     }
 }
 
