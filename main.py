@@ -277,3 +277,4 @@ auto_fix_btn.config(command=auto_fix_thread)
 root.mainloop()
 
 
+#deneme durumu
